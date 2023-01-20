@@ -4,10 +4,11 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test-watch": "jest --watch",
     "start": "node src/server.js",
     "watch": "nodemon src/server.js",
-    "startOnPort5000": "set PORT=5000 && nodemon src/server.js"
+    "cluster": "pm2 start src/server.js -i max"
   },
   "keywords": [],
   "author": "",
@@ -16,9 +17,12 @@
     "cors": "^2.8.5",
     "csv-parse": "^5.3.3",
     "express": "^4.18.2",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "pm2": "^5.2.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "jest": "^29.3.1",
+    "nodemon": "^2.0.20",
+    "supertest": "^6.3.3"
   }
 }
