@@ -1,6 +1,7 @@
-const launches = new Map();
+const launches = require("./launches.mongo");
+const planets = require("./planets.mongo");
 
-let latestFlightNumber = 100;
+const INITIAL_FLIGHT_NUMBER = 1;
 
 const launch = {
   flightNumber: 100,
@@ -8,39 +9,74 @@ const launch = {
   rocket: "Explorer IS1",
   launchDate: new Date("December 27, 2030"),
   target: "Kepler-442 b",
-  customer: ["SabmusCorp", "NASA"],
+  customers: ["SabmusCorp", "NASA"],
   upcoming: true,
   success: true,
 };
 
-launches.set(launch.flightNumber, launch);
+async function saveLaunch(launch) {
+  const planet = await planets.findOne({ keplerName: launch.target });
 
-function existsLaunchWithId(launchId) {
-  return launches.has(launchId);
-}
+  if (!planet) {
+    throw new Error("No matching planet found");
+  }
 
-function getAllLaunches() {
-  return Array.from(launches.values());
-}
-
-function addNewLaunch(launch) {
-  latestFlightNumber++;
-  launches.set(
-    latestFlightNumber,
-    Object.assign(launch, {
-      flightNumber: latestFlightNumber,
-      customer: ["SabmusCorp", "NASA"],
-      upcoming: true,
-      success: true,
-    })
+  await launches.findOneAndUpdate(
+    {
+      flightNumber: launch.flightNumber,
+    },
+    launch,
+    {
+      upsert: true,
+    }
   );
 }
 
-function abortLaunchById(launchId) {
-  const aborted = launches.get(launchId);
-  aborted.upcoming = false;
-  aborted.success = false;
-  return aborted;
+saveLaunch(launch);
+
+async function existsLaunchWithId(launchId) {
+  return await launches.findOne({ flightNumber: launchId });
+}
+
+async function getAllLaunches() {
+  return await launches.find({}, { _id: 0, __v: 0 });
+}
+
+async function getLatestFlightNumber() {
+  const latestFlightNumber = await launches.findOne().sort("-flightNumber");
+
+  if (!latestFlightNumber) {
+    return INITIAL_FLIGHT_NUMBER;
+  }
+
+  return latestFlightNumber.flightNumber;
+}
+
+async function addNewLaunch(launch) {
+  const newFlightNumber = (await getLatestFlightNumber()) + 1;
+
+  const newLaunch = Object.assign(launch, {
+    flightNumber: newFlightNumber,
+    customers: ["SabmusCorp", "NASA"],
+    upcoming: true,
+    success: true,
+  });
+
+  await saveLaunch(newLaunch);
+}
+
+async function abortLaunchById(launchId) {
+  const aborted = await launches.updateOne(
+    {
+      flightNumber: launchId,
+    },
+    {
+      upcoming: false,
+      success: false,
+    }
+  );
+
+  return aborted.acknowledged === true && aborted.modifiedCount === 1;
 }
 
 module.exports = {
