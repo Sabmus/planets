@@ -73,6 +73,14 @@ const Launch = (props) => {
           </Button>
         </Clickable>
         {props.isPendingLaunch && <Loading animate small />}
+        <span
+          style={{
+            display: props.isLaunchAdded.ok ? "none" : "block",
+            fontSize: "1rem",
+          }}
+        >
+          {props.isLaunchAdded.error}
+        </span>
       </form>
     </Appear>
   );

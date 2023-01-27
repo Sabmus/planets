@@ -46,9 +46,9 @@ const theme = {
   color: {
     content: "#a1ecfb",
   },
-  padding: 20,
+  padding: 10,
   responsive: {
-    small: 600,
+    small: 360,
     medium: 800,
     large: 1200,
   },

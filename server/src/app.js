@@ -9,7 +9,7 @@ const api = require("./routes/api");
 const app = express();
 
 /** Middlewares */
-app.use(helmet());
+//app.use(helmet());
 
 app.use(
   cors({

@@ -11,13 +11,7 @@ const { loadLaunchesData } = require("./models/launches.model");
 
 const PORT = process.env.PORT || 8000; //443
 
-const server = http.createServer(
-  // {
-  //   key: fs.readFileSync(path.join(__dirname, "keys", "key.pem")),
-  //   cert: fs.readFileSync(path.join(__dirname, "keys", "cert.pem")),
-  // },
-  app
-);
+const server = http.createServer(app);
 
 async function startServer() {
   // we wait until the planets data is fully loaded, then the server can start;

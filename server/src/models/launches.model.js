@@ -4,6 +4,7 @@ const planets = require("./planets.mongo");
 
 const INITIAL_FLIGHT_NUMBER = 1;
 const SPACEX_API_URL = "https://api.spacexdata.com/v4/launches/query";
+const MAX_LAUNCHES_NUMBERS = 300;
 
 async function saveLaunch(launch) {
   await launches.findOneAndUpdate(
@@ -51,6 +52,10 @@ async function addNewLaunch(launch) {
   }
 
   const newFlightNumber = (await getLatestFlightNumber()) + 1;
+
+  if (newFlightNumber > MAX_LAUNCHES_NUMBERS) {
+    throw new Error("Max launches count reached");
+  }
 
   const newLaunch = Object.assign(launch, {
     flightNumber: newFlightNumber,

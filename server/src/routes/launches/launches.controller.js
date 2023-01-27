@@ -33,9 +33,14 @@ async function httpAddNewLaunch(req, res) {
       error: "Invalid launch date",
     });
   }
-
-  await addNewLaunch(launch);
-  return res.status(201).json(launch);
+  try {
+    await addNewLaunch(launch);
+    return res.status(201).json(launch);
+  } catch (error) {
+    return res.status(400).json({
+      error: error.message,
+    });
+  }
 }
 
 async function htppAbortLaunch(req, res) {
